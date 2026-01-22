@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./python
+      dockerfile: Dockerfile
+    ports:
+      - "5001:5001"
+    volumes:
+      - ./python:/app
+    environment:
+      - CUDA_VISIBLE_DEVICES=-1 # Force TensorFlow to use CPU
+    command: gunicorn --bind 0.0.0.0:5001 --timeout 120 --workers 2 app:app
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./analizador-de-sentimientos-con-ia
+      dockerfile: Dockerfile
+    ports:
+      - "9002:9002"
+      - "3000:3000"
+    environment:
+      # This URL should point to the backend service within the Docker network
+      NEXT_PUBLIC_API_URL: http://backend:5001
+    depends_on:
+      - backend
+    restart: unless-stopped
