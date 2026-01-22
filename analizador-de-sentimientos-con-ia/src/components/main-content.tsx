@@ -5,7 +5,6 @@ import { useState, useTransition, useMemo } from 'react';
 import type { AnalysisResult, Post, Comment } from '@/app/types';
 import { AnalysisForm } from './analysis-form';
 import { ResultsDisplay } from './results-display';
-import { getPostFromUrl } from '@/app/actions';
 import { PostDisplay } from './post-display';
 import { Card, CardContent } from '@/components/ui/card';
 import { Bot } from 'lucide-react';
@@ -17,20 +16,27 @@ export function MainContent() {
   const [isPending, startTransition] = useTransition();
   const [fetchError, setFetchError] = useState<string | null>(null);
 
-  const handleUrlSubmit = (url: string) => {
+  const handleUrlSubmit = (query: string) => {
     setFetchError(null);
     setResult(null);
     setPost(null);
     setComments([]);
     startTransition(async () => {
-      const postData = await getPostFromUrl(url);
-      if ('error' in postData) {
-        setFetchError(postData.error);
+      try {
+        const response = await fetch(`/api/posts?q=${encodeURIComponent(query)}`);
+        const postData = await response.json();
+        if ('error' in postData) {
+          setFetchError(postData.error);
+          setPost(null);
+          setComments([]);
+        } else {
+          setPost(postData.post);
+          setComments(postData.comments);
+        }
+      } catch (error: any) {
+        setFetchError(error.message || 'Failed to fetch post');
         setPost(null);
         setComments([]);
-      } else {
-        setPost(postData.post);
-        setComments(postData.comments);
       }
     });
   };

@@ -1,14 +1,19 @@
 
 import os
 import re
-import sys # Import sys to exit application
+import sys
 import pickle
-import traceback # Import traceback for detailed error logging
+import traceback
 import numpy as np
 import tensorflow as tf
 from flask import Flask, request, jsonify
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from werkzeug.exceptions import BadRequest
+from dotenv import load_dotenv
+from bluesky_service import BlueskyService
+
+# Cargar variables de entorno desde .env
+load_dotenv()
 
 # --- Configuración Inicial ---
 MAX_SEQUENCE_LENGTH = 100
@@ -20,6 +25,9 @@ CATEGORIAS = {0: 'Negative', 1: 'Neutral', 2: 'Positive'}
 
 # --- Creación de la App Flask ---
 app = Flask(__name__)
+
+# --- Inicializar servicio de Bluesky ---
+bluesky_service = BlueskyService()
 
 # --- Carga de Modelo y Tokenizer (al inicio, a nivel de módulo) ---
 loading_error = None
@@ -126,15 +134,96 @@ def predict():
 
 @app.route('/health', methods=['GET'])
 def health_check():
-    # Si la app está corriendo, este endpoint siempre debería devolver OK
-    # porque la app habría fallado al iniciar si el modelo no estuviera listo.
     return jsonify({
         "status": "ok",
         "service_status": "Running",
         "model_status": "Loaded Successfully"
     })
 
-if __name__ == '__main__':
+# --- Endpoints de Bluesky ---
+
+@app.route('/bluesky/feed', methods=['GET'])
+def get_bluesky_feed():
+    """
+    Obtener el feed de Bluesky del usuario conectado.
+    
+    Parámetros query:
+    - limit: número de posts (default: 10, máximo: 50)
+    
+    Ejemplo: /bluesky/feed?limit=5
+    """
+    try:
+        limit = min(int(request.args.get('limit', 10)), 50)
+        
+        posts = bluesky_service.get_feed(limit=limit)
+        
+        if not posts:
+            return jsonify({"error": "No se pudieron obtener posts del feed de Bluesky"}), 400
+        
+        return jsonify({"posts": posts, "count": len(posts)})
+    
+    except ValueError:
+        return jsonify({"error": "El parámetro 'limit' debe ser un número."}), 400
+    except Exception as e:
+        app.logger.error(f"Error obteniendo feed de Bluesky: {e}\n{traceback.format_exc()}")
+        return jsonify({"error": "Error al obtener el feed de Bluesky"}), 500
+
+@app.route('/bluesky/search', methods=['GET'])
+def search_bluesky():
+    """
+    Buscar posts en Bluesky.
+    
+    Parámetros query (requeridos):
+    - q: término de búsqueda
+    - limit: número de resultados (default: 10, máximo: 50)
+    
+    Ejemplo: /bluesky/search?q=python&limit=5
+    """
+    try:
+        query = request.args.get('q')
+        limit = min(int(request.args.get('limit', 10)), 50)
+        
+        if not query:
+            return jsonify({"error": "El parámetro 'q' (query) es requerido."}), 400
+        
+        posts = bluesky_service.search_posts(query, limit=limit)
+        
+        if not posts:
+            return jsonify({"error": f"No se encontraron posts con '{query}'"}), 400
+        
+        return jsonify({"query": query, "posts": posts, "count": len(posts)})
+    
+    except ValueError:
+        return jsonify({"error": "El parámetro 'limit' debe ser un número."}), 400
+    except Exception as e:
+        app.logger.error(f"Error buscando en Bluesky: {e}\n{traceback.format_exc()}")
+        return jsonify({"error": "Error al buscar en Bluesky"}), 500
+
+@app.route('/bluesky/author/<author>', methods=['GET'])
+def get_bluesky_author(author):
+    """
+    Obtener posts de un autor en Bluesky.
+    
+    Parámetros query:
+    - limit: número de posts (default: 10, máximo: 50)
+    
+    Ejemplo: /bluesky/author/user.bsky.social?limit=5
+    """
+    try:
+        limit = min(int(request.args.get('limit', 10)), 50)
+        
+        posts = bluesky_service.get_posts_by_author(author, limit=limit)
+        
+        if not posts:
+            return jsonify({"error": f"No se pudieron obtener posts de @{author}"}), 400
+        
+        return jsonify({"author": author, "posts": posts, "count": len(posts)})
+    
+    except ValueError:
+        return jsonify({"error": "El parámetro 'limit' debe ser un número."}), 400
+    except Exception as e:
+        app.logger.error(f"Error obteniendo posts del autor: {e}\n{traceback.format_exc()}")
+        return jsonify({"error": "Error al obtener posts del autor"}), 500
     # Usar el puerto 5001 para evitar conflictos
     app.run(host='0.0.0.0', port=5001, debug=False)
     
