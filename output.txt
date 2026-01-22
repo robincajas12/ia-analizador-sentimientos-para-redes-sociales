@@ -1,10 +1,4 @@
-He corregido el archivo `python/app.py`.
 
-El problema era una inconsistencia en la estructura del campo `probabilities` en la respuesta de la API. El frontend esperaba un array de objetos (ej: `[{name: "Negative", value: 0.1}]`), mientras que el backend estaba enviando un objeto (ej: `{"Negative": 0.1}`).
-
-He modificado el backend para que `probabilities` ahora sea un array de objetos, lo que coincide con lo que el frontend espera.
-
-Por favor, intenta levantar las aplicaciones de nuevo con:
 
 ```bash
 docker compose up --build
