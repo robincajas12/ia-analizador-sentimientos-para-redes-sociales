@@ -1,10 +1,8 @@
-He corregido el archivo `analizador-de-sentimientos-con-ia/src/app/actions.ts`.
+He corregido el archivo `python/app.py`.
 
-El problema era que el frontend estaba intentando conectar a una dirección `http://api:5001/predict` codificada, en lugar de usar la variable de entorno `NEXT_PUBLIC_API_URL` que se configuró en `docker-compose.yaml`.
+El problema era una inconsistencia en la estructura del campo `probabilities` en la respuesta de la API. El frontend esperaba un array de objetos (ej: `[{name: "Negative", value: 0.1}]`), mientras que el backend estaba enviando un objeto (ej: `{"Negative": 0.1}`).
 
-He modificado la línea de `fetch` para que use correctamente la variable de entorno:
-De: `const response = await fetch('http://api:5001/predict', {`
-A: `const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/predict`, {`
+He modificado el backend para que `probabilities` ahora sea un array de objetos, lo que coincide con lo que el frontend espera.
 
 Por favor, intenta levantar las aplicaciones de nuevo con:
 

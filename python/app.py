@@ -102,11 +102,11 @@ def predict():
         sentimiento_predicho = CATEGORIAS[indice_predicho]
         confianza = float(prediccion_probs[indice_predicho])
 
-        probabilidades = {
-            "Positive": float(prediccion_probs[2]),
-            "Negative": float(prediccion_probs[0]),
-            "Neutral": float(prediccion_probs[1])
-        }
+        probabilidades = [
+            {"name": "Negative", "value": float(prediccion_probs[0])},
+            {"name": "Neutral", "value": float(prediccion_probs[1])},
+            {"name": "Positive", "value": float(prediccion_probs[2])}
+        ]
 
         response = {
             "sentiment": sentimiento_predicho,
