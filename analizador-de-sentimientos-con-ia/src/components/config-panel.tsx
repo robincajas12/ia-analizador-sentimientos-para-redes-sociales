@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Facebook, SlidersHorizontal, Twitter } from 'lucide-react';
-import { RedditIcon } from '@/components/icons';
+import { RedditIcon, BlueskyIcon } from '@/components/icons';
 import {
   SidebarHeader,
   SidebarContent,
@@ -36,6 +36,13 @@ export function ConfigPanel() {
         <SidebarGroup>
           <SidebarGroupLabel>Data Sources</SidebarGroupLabel>
           <SidebarGroupContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="bluesky-source" className="flex items-center gap-2 cursor-pointer">
+                <BlueskyIcon className="w-5 h-5 text-blue-400" />
+                Bluesky
+              </Label>
+              <Switch id="bluesky-source" defaultChecked />
+            </div>
             <div className="flex items-center justify-between">
               <Label htmlFor="twitter-source" className="flex items-center gap-2 cursor-pointer">
                 <Twitter className="w-5 h-5 text-sky-500" />
