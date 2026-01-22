@@ -16,3 +16,20 @@ export function RedditIcon(props: SVGProps<SVGSVGElement>) {
     </svg>
   );
 }
+export function BlueskyIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      role="img"
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <title>Bluesky</title>
+      <path
+        fill="currentColor"
+        d="M12 0C5.372 0 0 5.373 0 12s5.372 12 12 12 12-5.373 12-12S18.628 0 12 0zm.001 22.002C6.475 22.002 2 17.527 2 12.001 2 6.475 6.475 2 12.001 2c5.526 0 10.001 4.475 10.001 10.001 0 5.526-4.475 10.001-10.001 10.001z"
+      />
+      <circle cx="12" cy="12" r="8" fill="currentColor" opacity="0.8" />
+    </svg>
+  );
+}
