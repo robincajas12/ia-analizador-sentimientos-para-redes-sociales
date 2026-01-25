@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Facebook, SlidersHorizontal, Twitter } from 'lucide-react';
-import { RedditIcon, BlueskyIcon } from '@/components/icons';
+import { Facebook, SlidersHorizontal } from 'lucide-react';
+import { BlueskyIcon } from '@/components/icons';
 import {
   SidebarHeader,
   SidebarContent,
@@ -11,7 +11,6 @@ import {
   SidebarGroupContent,
 } from '@/components/ui/sidebar';
 import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
 import { Slider } from '@/components/ui/slider';
 import {
   Select,
@@ -34,35 +33,21 @@ export function ConfigPanel() {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Data Sources</SidebarGroupLabel>
+          <SidebarGroupLabel>Supported Platforms</SidebarGroupLabel>
           <SidebarGroupContent className="space-y-4">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="bluesky-source" className="flex items-center gap-2 cursor-pointer">
+            <div className="p-3 rounded-md bg-muted border">
+              <div className="flex items-center gap-2 mb-1">
                 <BlueskyIcon className="w-5 h-5 text-blue-400" />
-                Bluesky
-              </Label>
-              <Switch id="bluesky-source" defaultChecked />
+                <Label className="font-semibold text-sm">Bluesky</Label>
+              </div>
+              <p className="text-xs text-muted-foreground">Paste a post URL from bsky.app</p>
             </div>
-            <div className="flex items-center justify-between">
-              <Label htmlFor="twitter-source" className="flex items-center gap-2 cursor-pointer">
-                <Twitter className="w-5 h-5 text-sky-500" />
-                Twitter
-              </Label>
-              <Switch id="twitter-source" defaultChecked />
-            </div>
-            <div className="flex items-center justify-between">
-              <Label htmlFor="facebook-source" className="flex items-center gap-2 cursor-pointer">
+            <div className="p-3 rounded-md bg-muted border">
+              <div className="flex items-center gap-2 mb-1">
                 <Facebook className="w-5 h-5 text-blue-600" />
-                Facebook
-              </Label>
-              <Switch id="facebook-source" defaultChecked />
-            </div>
-            <div className="flex items-center justify-between">
-              <Label htmlFor="reddit-source" className="flex items-center gap-2 cursor-pointer">
-                <RedditIcon className="w-5 h-5 text-orange-500" />
-                Reddit
-              </Label>
-              <Switch id="reddit-source" />
+                <Label className="font-semibold text-sm">Facebook</Label>
+              </div>
+              <p className="text-xs text-muted-foreground">Paste a page or post URL from facebook.com</p>
             </div>
           </SidebarGroupContent>
         </SidebarGroup>
