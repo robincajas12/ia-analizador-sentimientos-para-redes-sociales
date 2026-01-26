@@ -16,14 +16,16 @@ export function MainContent() {
   const [isPending, startTransition] = useTransition();
   const [fetchError, setFetchError] = useState<string | null>(null);
 
-  const handleUrlSubmit = (query: string) => {
+  const handleUrlSubmit = (url: string, limit?: number) => {
     setFetchError(null);
     setResult(null);
     setPost(null);
     setComments([]);
     startTransition(async () => {
       try {
-        const response = await fetch(`/api/posts?q=${encodeURIComponent(query)}`);
+        const qs = new URLSearchParams({ url });
+        if (typeof limit === 'number') qs.set('limit', String(limit));
+        const response = await fetch(`/api/posts?${qs.toString()}`);
         const postData = await response.json();
         if ('error' in postData) {
           setFetchError(postData.error);
